@@ -41,5 +41,15 @@ public class Passenger {
     public void setTickArrived(int tickArrived) {
         this.tickArrived = tickArrived;
     }
-    
+
+    @Override
+    public String toString() {
+        return "Passenger{" +
+                "originFloor=" + originFloor +
+                ", destinationFloor=" + destinationFloor +
+                ", tickAppeared=" + tickAppeared +
+                ", tickBoarded=" + (tickBoarded == -1 ? "Not yet boarded" : tickBoarded) +
+                ", tickArrived=" + (tickArrived == -1 ? "Not yet arrived" : tickArrived) +
+                '}';
+    }
 }
