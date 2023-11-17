@@ -30,19 +30,13 @@ public class Elevator {
 
     // Move the elevator one floor up or down
     public void move() {
-        if (direction == Direction.UP && currentFloor < numberOfFloors - 1) {
-            currentFloor++;
-        } else if (direction == Direction.DOWN && currentFloor > 0) {
-            currentFloor--;
-        }
-
-        // If the elevator reaches the top or bottom floor, change its direction or set it to IDLE
-        if (currentFloor == 0 || currentFloor == numberOfFloors - 1) {
-            // Decide how to handle the elevator at this point - example:
-            // direction = Direction.IDLE;
-            // Or reverse the direction, or implement a more complex logic based on your requirements
+        if (this.direction == Direction.UP) {
+            this.currentFloor++;
+        } else if (this.direction == Direction.DOWN) {
+            this.currentFloor--;
         }
     }
+
 
     // Load a passenger onto the elevator
     public boolean loadPassenger(Passenger passenger) {

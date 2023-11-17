@@ -89,7 +89,9 @@ public class ElevatorSimulation {
 
     private void moveElevators() {
         for (Elevator elevator : elevators) {
+            System.out.println("Elevator at floor " + elevator.getCurrentFloor() + " moving " + elevator.getDirection());
             elevator.move();
+            System.out.println("Elevator now at floor " + elevator.getCurrentFloor());
         }
     }
 
