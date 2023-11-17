@@ -20,7 +20,7 @@ public class Elevator {
     public Elevator(int capacity, int numberOfFloors) {
         this.currentFloor = 0; // Assuming ground floor as start
         this.capacity = capacity;
-        this.numberOfFloors = this.numberOfFloors;
+        this.numberOfFloors = numberOfFloors;
         this.direction = Direction.IDLE;
         this.passengers = new LinkedList<>();
     }
@@ -30,11 +30,46 @@ public class Elevator {
 
     // Move the elevator one floor up or down
     public void move() {
-        if (this.direction == Direction.UP) {
+        int previousFloor = this.currentFloor;
+
+        if (this.direction == Direction.UP && this.currentFloor < numberOfFloors - 1) {
             this.currentFloor++;
-        } else if (this.direction == Direction.DOWN) {
+        } else if (this.direction == Direction.DOWN && this.currentFloor > 0) {
             this.currentFloor--;
         }
+
+        // Print the message only if the floor has changed
+        if (this.currentFloor != previousFloor) {
+            System.out.println("Elevator now at floor " + this.currentFloor);
+        }
+
+        if (currentFloor == 0) {
+            if (!hasPassengersForLowerFloors()) {
+                direction = Direction.UP;
+            }
+        } else if (currentFloor == numberOfFloors - 1) {
+            if (!hasPassengersForUpperFloors()) {
+                direction = Direction.DOWN;
+            }
+        }
+    }
+
+    private boolean hasPassengersForLowerFloors() {
+        for (Passenger passenger : passengers) {
+            if (passenger.getDestinationFloor() < currentFloor) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean hasPassengersForUpperFloors() {
+        for (Passenger passenger : passengers) {
+            if (passenger.getDestinationFloor() > currentFloor) {
+                return true;
+            }
+        }
+        return false;
     }
 
 

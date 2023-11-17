@@ -12,12 +12,15 @@ public class ElevatorSimulation {
     private List<Elevator> elevators;
     private Random random;
     private int currentTick;
+    private int elevatorCapacity;
 
-    public ElevatorSimulation(int numberOfFloors, int numberOfElevators, double passengerProbability, int simulationDuration) {
-        this.numberOfFloors = numberOfFloors;
-        this.numberOfElevators = numberOfElevators;
-        this.passengerProbability = passengerProbability;
-        this.simulationDuration = simulationDuration;
+    public ElevatorSimulation(String propertiesFilePath) {
+        PropertyManager propertyManager = new PropertyManager(propertiesFilePath);
+        this.numberOfFloors = Integer.parseInt(propertyManager.getProperty("floors"));
+        this.numberOfElevators = Integer.parseInt(propertyManager.getProperty("elevators"));
+        this.passengerProbability = Double.parseDouble(propertyManager.getProperty("passengers"));
+        this.simulationDuration = Integer.parseInt(propertyManager.getProperty("duration"));
+        this.elevatorCapacity = Integer.parseInt(propertyManager.getProperty("elevatorCapacity"));
         this.floors = new ArrayList<>();
         this.elevators = new ArrayList<>();
         this.random = new Random();
@@ -28,7 +31,7 @@ public class ElevatorSimulation {
             floors.add(new Floor(i));
         }
         for (int i = 0; i < numberOfElevators; i++) {
-            elevators.add(new Elevator(10, numberOfFloors)); // Pass numberOfFloors here
+            elevators.add(new Elevator(elevatorCapacity, numberOfFloors));
         }
     }
 
@@ -128,14 +131,10 @@ public class ElevatorSimulation {
 
     // Main method to run the simulation
     public static void main(String[] args) {
-        // Example configuration - these values can be changed or read from a file or arguments
-        int numberOfFloors = 10;  // Number of floors in the simulation
-        int numberOfElevators = 3; // Number of elevators
-        double passengerProbability = 0.1; // Probability of a passenger appearing
-        int simulationDuration = 100; // Number of ticks the simulation will run
-
+        // Path to your properties file
+        String propertiesFilePath = "path/to/your/properties.file";
         // Create and start the elevator simulation
-        ElevatorSimulation simulation = new ElevatorSimulation(numberOfFloors, numberOfElevators, passengerProbability, simulationDuration);
+        ElevatorSimulation simulation = new ElevatorSimulation(propertiesFilePath);
         simulation.startSimulation();
     }
 }
