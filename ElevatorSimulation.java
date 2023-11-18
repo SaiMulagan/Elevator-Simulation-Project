@@ -109,10 +109,69 @@ public class ElevatorSimulation {
 
     private void moveElevators() {
         for (Elevator elevator : elevators) {
-            System.out.println("Elevator at floor " + elevator.getCurrentFloor() + " moving " + elevator.getDirection());
-            elevator.move();
+            if (elevator.getDirection() == Elevator.Direction.IDLE) {
+                continue;
+            }
+
+            int nextStop = findNextStop(elevator);
+            int floorsToMove = Math.min(Math.abs(nextStop - elevator.getCurrentFloor()), 5);
+            // Move the elevator towards the next stop
+            for (int i = 0; i < floorsToMove; i++) {
+                if (elevator.getDirection() == Elevator.Direction.UP && elevator.getCurrentFloor() < numberOfFloors - 1) {
+                    elevator.setCurrentFloor(elevator.getCurrentFloor() + 1);
+                } else if (elevator.getDirection() == Elevator.Direction.DOWN && elevator.getCurrentFloor() > 0) {
+                    elevator.setCurrentFloor(elevator.getCurrentFloor() - 1);
+                }
+            }
+
             System.out.println("Elevator now at floor " + elevator.getCurrentFloor());
+            // Existing logic for handling direction changes
         }
+    }
+
+    private int findNextStop(Elevator elevator) {
+        int nextStop = elevator.getDirection() == Elevator.Direction.UP ? numberOfFloors : -1;
+        int currentFloor = elevator.getCurrentFloor();
+        int directionFactor = elevator.getDirection() == Elevator.Direction.UP ? 1 : -1;
+
+        // Check passengers' destinations inside the elevator
+        for (Passenger passenger : elevator.getPassengers()) {
+            int destination = passenger.getDestinationFloor();
+            if ((directionFactor == 1 && destination > currentFloor && destination < nextStop) ||
+                    (directionFactor == -1 && destination < currentFloor && destination > nextStop)) {
+                nextStop = destination;
+            }
+        }
+
+        // Check waiting passengers on floors
+        for (int i = currentFloor + directionFactor; i >= 0 && i < numberOfFloors; i += directionFactor) {
+            Floor floor = floors.get(i);
+            if (!floor.getUpQueue().isEmpty() || !floor.getDownQueue().isEmpty()) {
+                nextStop = i;
+                break;
+            }
+        }
+
+        return nextStop;
+    }
+
+    private boolean shouldStopAtFloor(Elevator elevator, int floor) {
+        // Check if any passenger inside the elevator has this floor as their destination
+        for (Passenger passenger : elevator.getPassengers()) {
+            if (passenger.getDestinationFloor() == floor) {
+                return true;
+            }
+        }
+
+        // Check for waiting passengers at the floor
+        Floor floorObj = floors.get(floor);
+        if (elevator.getDirection() == Elevator.Direction.UP && !floorObj.getUpQueue().isEmpty()) {
+            return true;
+        } else if (elevator.getDirection() == Elevator.Direction.DOWN && !floorObj.getDownQueue().isEmpty()) {
+            return true;
+        }
+
+        return false;
     }
 
     private void processElevatorStops() {
