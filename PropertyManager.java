@@ -25,7 +25,7 @@ public class PropertyManager {
         properties.setProperty("passengers", "0.03");
         properties.setProperty("elevators", "1");
         properties.setProperty("elevatorCapacity", "10");
-        properties.setProperty("duration", "500");
+        properties.setProperty("duration", "50");
     }
 
     public String getProperty(String key) {

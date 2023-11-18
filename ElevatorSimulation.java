@@ -66,21 +66,38 @@ public class ElevatorSimulation {
 
     private void determineElevatorDirections() {
         for (Elevator elevator : elevators) {
-            if (elevator.getDirection() == Elevator.Direction.IDLE) {
-                int nearestFloor = findNearestFloorWithPassengers(elevator.getCurrentFloor());
-                if (nearestFloor == -1) {
-                    // No passengers waiting, keep the elevator idle or decide on a default behavior
-                    continue;
-                }
-                if (nearestFloor > elevator.getCurrentFloor()) {
-                    elevator.setDirection(Elevator.Direction.UP);
-                } else if (nearestFloor < elevator.getCurrentFloor()) {
-                    elevator.setDirection(Elevator.Direction.DOWN);
-                }
+            // If the elevator is not idle or has passengers, skip setting new direction
+            if (elevator.getDirection() != Elevator.Direction.IDLE || !elevator.getPassengers().isEmpty()) {
+                continue;
+            }
+
+            // Check if there are any passengers waiting on any floor
+            if (noPassengersWaiting()) {
+                elevator.setDirection(Elevator.Direction.IDLE);
+                continue;
+            }
+
+            int nearestFloor = findNearestFloorWithPassengers(elevator.getCurrentFloor());
+            if (nearestFloor == -1) {
+                // No passengers waiting, keep the elevator idle or decide on a default behavior
+                continue;
+            }
+
+            if (nearestFloor > elevator.getCurrentFloor()) {
+                elevator.setDirection(Elevator.Direction.UP);
+            } else if (nearestFloor < elevator.getCurrentFloor()) {
+                elevator.setDirection(Elevator.Direction.DOWN);
             }
         }
     }
-
+    private boolean noPassengersWaiting() {
+        for (Floor floor : floors) {
+            if (!floor.getUpQueue().isEmpty() || !floor.getDownQueue().isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
     private int findNearestFloorWithPassengers(int currentFloor) {
         for (int i = 0; i < floors.size(); i++) {
             if (!floors.get(i).getUpQueue().isEmpty() || !floors.get(i).getDownQueue().isEmpty()) {
@@ -104,7 +121,8 @@ public class ElevatorSimulation {
             System.out.println("Before unloading/loading: " + elevator.toString());
 
             // Unload passengers
-            for (Passenger passenger : elevator.unloadPassengers()) {
+            Queue<Passenger> unloadedPassengers = elevator.unloadPassengers();
+            for (Passenger passenger : unloadedPassengers) {
                 passenger.setTickArrived(currentTick);
             }
 
@@ -118,8 +136,6 @@ public class ElevatorSimulation {
             System.out.println("After unloading/loading: " + elevator.toString());
         }
     }
-
-    // ... previous methods ...
 
     private void loadPassengers(Elevator elevator, Queue<Passenger> queue) {
         while (!queue.isEmpty() && elevator.getPassengers().size() < elevator.getCapacity()) {
