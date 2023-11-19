@@ -22,7 +22,7 @@ public class PropertyManager {
     private void setDefaultValues() {
         properties.setProperty("structures", "linked");
         properties.setProperty("floors", "12");
-        properties.setProperty("passengers", "0.3");
+        properties.setProperty("passengers", "0.1");
         properties.setProperty("elevators", "1");
         properties.setProperty("elevatorCapacity", "10");
         properties.setProperty("duration", "50");

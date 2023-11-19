@@ -26,7 +26,6 @@ public class ElevatorSimulation {
         this.random = new Random();
         this.currentTick = 0;
 
-        // Initialize floors and elevators
         for (int i = 0; i < numberOfFloors; i++) {
             floors.add(new Floor(i));
         }
@@ -35,7 +34,6 @@ public class ElevatorSimulation {
         }
     }
 
-    // Method to start the simulation
     public void startSimulation() {
         System.out.println("Starting simulation.");
         while (currentTick < simulationDuration) {
@@ -44,10 +42,12 @@ public class ElevatorSimulation {
             determineElevatorDirections();
             moveElevators();
             processElevatorStops();
+            updateElevatorsDirection();
             currentTick++;
         }
         System.out.println("Simulation ended.");
     }
+
 
     private void generatePassengers() {
         for (Floor floor : floors) {
@@ -154,24 +154,62 @@ public class ElevatorSimulation {
 
         return nextStop;
     }
+    private void updateElevatorsDirection() {
+        for (Elevator elevator : elevators) {
+            updateElevatorDirection(elevator);
+        }
+    }
+    private void updateElevatorDirection(Elevator elevator) {
+        // If the elevator is at the top or bottom floor, reverse its direction
+        if (elevator.getCurrentFloor() == 0) {
+            elevator.setDirection(Elevator.Direction.UP);
+        } else if (elevator.getCurrentFloor() == numberOfFloors - 1) {
+            elevator.setDirection(Elevator.Direction.DOWN);
+        } else {
+            // Check if there are more passengers to serve in the current direction
+            boolean hasMorePassengers = false;
+            if (elevator.getDirection() == Elevator.Direction.UP) {
+                hasMorePassengers = hasPassengersAbove(elevator) || elevatorHasPassengersForUpperFloors(elevator);
+            } else if (elevator.getDirection() == Elevator.Direction.DOWN) {
+                hasMorePassengers = hasPassengersBelow(elevator) || elevatorHasPassengersForLowerFloors(elevator);
+            }
 
-    private boolean shouldStopAtFloor(Elevator elevator, int floor) {
-        // Check if any passenger inside the elevator has this floor as their destination
-        for (Passenger passenger : elevator.getPassengers()) {
-            if (passenger.getDestinationFloor() == floor) {
+            // If there are no more passengers to serve in the current direction, change direction or set to idle
+            if (!hasMorePassengers) {
+                if (elevator.getDirection() == Elevator.Direction.UP) {
+                    elevator.setDirection(hasPassengersBelow(elevator) ? Elevator.Direction.DOWN : Elevator.Direction.IDLE);
+                } else if (elevator.getDirection() == Elevator.Direction.DOWN) {
+                    elevator.setDirection(hasPassengersAbove(elevator) ? Elevator.Direction.UP : Elevator.Direction.IDLE);
+                }
+            }
+        }
+    }
+
+    // Helper methods to check for passengers
+    private boolean hasPassengersAbove(Elevator elevator) {
+        for (int i = elevator.getCurrentFloor() + 1; i < numberOfFloors; i++) {
+            if (!floors.get(i).getUpQueue().isEmpty() || !floors.get(i).getDownQueue().isEmpty()) {
                 return true;
             }
         }
-
-        // Check for waiting passengers at the floor
-        Floor floorObj = floors.get(floor);
-        if (elevator.getDirection() == Elevator.Direction.UP && !floorObj.getUpQueue().isEmpty()) {
-            return true;
-        } else if (elevator.getDirection() == Elevator.Direction.DOWN && !floorObj.getDownQueue().isEmpty()) {
-            return true;
-        }
-
         return false;
+    }
+
+    private boolean hasPassengersBelow(Elevator elevator) {
+        for (int i = elevator.getCurrentFloor() - 1; i >= 0; i--) {
+            if (!floors.get(i).getUpQueue().isEmpty() || !floors.get(i).getDownQueue().isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean elevatorHasPassengersForUpperFloors(Elevator elevator) {
+        return elevator.getPassengers().stream().anyMatch(p -> p.getDestinationFloor() > elevator.getCurrentFloor());
+    }
+
+    private boolean elevatorHasPassengersForLowerFloors(Elevator elevator) {
+        return elevator.getPassengers().stream().anyMatch(p -> p.getDestinationFloor() < elevator.getCurrentFloor());
     }
 
     private void processElevatorStops() {
@@ -207,7 +245,7 @@ public class ElevatorSimulation {
     // Main method to run the simulation
     public static void main(String[] args) {
         // Path to your properties file
-        String propertiesFilePath = "path/to/your/properties.file";
+        String propertiesFilePath = "/users/ai/Downloads/myFile.properties";
         // Create and start the elevator simulation
         ElevatorSimulation simulation = new ElevatorSimulation(propertiesFilePath);
         simulation.startSimulation();
