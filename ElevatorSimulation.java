@@ -107,7 +107,6 @@ public class ElevatorSimulation {
 
             int nearestFloor = findNearestFloorWithPassengers(elevator.getCurrentFloor());
             if (nearestFloor == -1) {
-                // No passengers waiting, keep the elevator idle or decide on a default behavior
                 continue;
             }
 
@@ -153,7 +152,7 @@ public class ElevatorSimulation {
             }
 
             //System.out.println("Elevator now at floor " + elevator.getCurrentFloor());
-            // Existing logic for handling direction changes
+
         }
     }
 
