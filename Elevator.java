@@ -31,7 +31,7 @@ public class Elevator {
 
     // Load a passenger onto the elevator
     public boolean loadPassenger(Passenger passenger) {
-        System.out.println("Unloading passenger going to floor " + passenger.getDestinationFloor());
+        //System.out.println("Unloading passenger going to floor " + passenger.getDestinationFloor());
         if (passengers.size() < capacity) {
             passengers.add(passenger);
             return true;

@@ -37,7 +37,7 @@ public class ElevatorSimulation {
     public void startSimulation() {
         System.out.println("Starting simulation.");
         while (currentTick < simulationDuration) {
-            System.out.println("Tick: " + currentTick);
+           //System.out.println("Tick: " + currentTick);
             generatePassengers();
             determineElevatorDirections();
             moveElevators();
@@ -46,8 +46,36 @@ public class ElevatorSimulation {
             currentTick++;
         }
         System.out.println("Simulation ended.");
+        reportResults();
     }
+    private void reportResults() {
+        int totalTravelTime = 0;
+        int longestTravelTime = Integer.MIN_VALUE;
+        int shortestTravelTime = Integer.MAX_VALUE;
+        int count = 0;
 
+        // Iterate through all floors to get passengers and their travel times
+        for (Floor floor : floors) {
+            for (Passenger passenger : floor.getAllPassengers()) {
+                if (passenger.getTickArrived() > -1) {
+                    int travelTime = passenger.getTickArrived() - passenger.getTickAppeared();
+                    totalTravelTime += travelTime;
+                    longestTravelTime = Math.max(longestTravelTime, travelTime);
+                    shortestTravelTime = Math.min(shortestTravelTime, travelTime);
+                    count++;
+                }
+            }
+        }
+
+        if (count > 0) {
+            double averageTravelTime = totalTravelTime / (double) count;
+            System.out.println("Average travel time: " + averageTravelTime);
+            System.out.println("Longest travel time: " + longestTravelTime);
+            System.out.println("Shortest travel time: " + shortestTravelTime);
+        } else {
+            System.out.println("No passengers were transported.");
+        }
+    }
 
     private void generatePassengers() {
         for (Floor floor : floors) {
@@ -59,7 +87,7 @@ public class ElevatorSimulation {
 
                 Passenger passenger = new Passenger(floor.getFloorNumber(), destinationFloor, currentTick);
                 floor.addPassenger(passenger);
-                System.out.println("New passenger at floor " + floor.getFloorNumber() + " going to " + destinationFloor);
+                //System.out.println("New passenger at floor " + floor.getFloorNumber() + " going to " + destinationFloor);
             }
         }
     }
@@ -124,7 +152,7 @@ public class ElevatorSimulation {
                 }
             }
 
-            System.out.println("Elevator now at floor " + elevator.getCurrentFloor());
+            //System.out.println("Elevator now at floor " + elevator.getCurrentFloor());
             // Existing logic for handling direction changes
         }
     }
@@ -215,7 +243,7 @@ public class ElevatorSimulation {
     private void processElevatorStops() {
         for (Elevator elevator : elevators) {
             Floor currentFloor = floors.get(elevator.getCurrentFloor());
-            System.out.println("Before unloading/loading: " + elevator.toString());
+            //System.out.println("Before unloading/loading: " + elevator.toString());
 
             // Unload passengers
             Queue<Passenger> unloadedPassengers = elevator.unloadPassengers();
@@ -230,7 +258,7 @@ public class ElevatorSimulation {
                 loadPassengers(elevator, currentFloor.getDownQueue());
             }
 
-            System.out.println("After unloading/loading: " + elevator.toString());
+           // System.out.println("After unloading/loading: " + elevator.toString());
         }
     }
 

@@ -1,15 +1,19 @@
-import java.util.Queue;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 public class Floor {
     private int floorNumber;
     private Queue<Passenger> upQueue;   // Queue for passengers going up
     private Queue<Passenger> downQueue; // Queue for passengers going down
+    private List<Passenger> passengerHistory;
 
     public Floor(int floorNumber) {
         this.floorNumber = floorNumber;
         this.upQueue = new LinkedList<>();
         this.downQueue = new LinkedList<>();
+        this.passengerHistory = new ArrayList<>(); // Initialize the passenger history list
     }
 
     // Method to add a passenger to the appropriate queue
@@ -19,6 +23,7 @@ public class Floor {
         } else {
             downQueue.add(passenger);
         }
+        passengerHistory.add(passenger); // Add the passenger to the history list
     }
 
     // Getters for the queues
@@ -38,6 +43,10 @@ public class Floor {
     // Method to remove passengers from the queues
     public Passenger dequeueUp() {
         return upQueue.poll();
+    }
+
+    public List<Passenger> getAllPassengers() {
+        return new ArrayList<>(passengerHistory); // Return a copy of the passenger history
     }
 
     public Passenger dequeueDown() {
