@@ -19,6 +19,6 @@ Used in the Floor class to manage waiting passengers efficiently.
 ### ArrayLists: 
 Used for storing collections of Elevator and Floor objects in ElevatorSimulation.
 
-I coudn't figure out how to switch between linked and a array list!
+I coudn't figure out how to switch between linked and array list!
 
 ## To change path of properties file go to main.
